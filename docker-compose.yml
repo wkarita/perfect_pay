@@ -30,6 +30,11 @@ services:
       MYSQL_ROOT_PASSWORD: "${DB_PASSWORD}"
       SERVICE_TAGS: dev
       SERVICE_NAME: mysql
+    healthcheck:
+      test: mysql ${DB_DATABASE} --user=${DB_USERNAME} --password='${DB_PASSWORD}' --silent --execute "SELECT 1;"
+      interval: 30s
+      timeout: 10s
+      retries: 15
 
   api:
     build:
@@ -48,8 +53,8 @@ services:
       - "traefik.http.routers.api_site.rule=Host(`api.localhost`)"
       - "traefik.http.routers.api.rule=(Host(`api.localhost`) && PathPrefix(`/api`))"
     depends_on:
-      - traefik
-      - mysql
+      mysql:
+        condition: service_healthy
 
   traefik:
     image: traefik:latest
