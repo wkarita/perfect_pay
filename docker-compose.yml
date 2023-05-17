@@ -1,0 +1,61 @@
+version: "3"
+services:
+  app:
+    build:
+      context: ./dockerfiles
+      dockerfile: javascript.dockerfile
+    command: >
+      bash -c "yarn install
+      && yarn dev --host 0.0.0.0 --port 5173"
+    ports:
+      - "8081:5173"
+    volumes:
+      - ./frontend:/var/www/html
+    labels:
+      - "traefik.http.routers.site.rule=Host(`app.localhost`)"
+    depends_on:
+      - traefik
+      - api
+
+  mysql:
+    image: mariadb:latest
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_DATABASE: "${DB_DATABASE}"
+      MYSQL_USER: "${DB_USERNAME}"
+      MYSQL_PASSWORD: "${DB_PASSWORD}"
+      MYSQL_ROOT_PASSWORD: "${DB_PASSWORD}"
+      SERVICE_TAGS: dev
+      SERVICE_NAME: mysql
+
+  api:
+    build:
+      context: ./dockerfiles
+      dockerfile: php.dockerfile
+    command: >
+      bash -c "composer install
+      && php artisan key:generate
+      && php artisan migrate
+      && /usr/local/bin/php artisan serve --host=0.0.0.0 --port=8082"
+    ports:
+      - "8082:8082"
+    volumes:
+      - ./backend:/var/www/html
+    labels:
+      - "traefik.http.routers.api_site.rule=Host(`api.localhost`)"
+      - "traefik.http.routers.api.rule=(Host(`api.localhost`) && PathPrefix(`/api`))"
+    depends_on:
+      - traefik
+      - mysql
+
+  traefik:
+    image: traefik:latest
+    command: --api.insecure=true --providers.docker
+    ports:
+      - "9090:80"
+      - "9091:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock

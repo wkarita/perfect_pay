@@ -1,0 +1,7 @@
+// Definir padrões de variáveis
+$primary: #409399;
+$warning: #e79b5c;
+
+// Em seguida, importe os arquivos Bootstrap e BootstrapVue SCSS (a ordem é importante)
+@import "bootstrap/scss/bootstrap.scss";
+@import "bootstrap-vue-3/dist/bootstrap-vue-3.css";
