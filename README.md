@@ -15,6 +15,11 @@ cp .env.example .env
 
 No arquivo .env altere os valores API_HOST= e o valor API_KEY= conforme necessário
 
+```
+API_HOST=https://sandbox.asaas.com/
+API_KEY=*Chaves da API(Assas)*
+```
+
 Em seguida, execute o Docker Compose na raiz do projeto.
 
 ```
