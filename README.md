@@ -23,7 +23,7 @@ API_KEY=*Chaves da API(Assas)*
 Em seguida, execute o Docker Compose na raiz do projeto.
 
 ```
-docker compose --env-file ./backend/.env up -d
+docker compose --env-file ./backend/.env up
 ```
 
 ## A API pode ser acessada em
